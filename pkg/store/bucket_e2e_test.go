@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-kit/kit/log"
 	"github.com/improbable-eng/thanos/pkg/block"
+	"github.com/improbable-eng/thanos/pkg/block/metadata"
 	"github.com/improbable-eng/thanos/pkg/objstore"
 	"github.com/improbable-eng/thanos/pkg/objstore/objtesting"
 	"github.com/improbable-eng/thanos/pkg/runutil"
@@ -66,10 +67,10 @@ func TestBucketStore_e2e(t *testing.T) {
 			dir1, dir2 := filepath.Join(dir, id1.String()), filepath.Join(dir, id2.String())
 
 			// Add labels to the meta of the second block.
-			meta, err := block.ReadMetaFile(dir2)
+			meta, err := metadata.Read(dir2)
 			testutil.Ok(t, err)
 			meta.Thanos.Labels = map[string]string{"ext2": "value2"}
-			testutil.Ok(t, block.WriteMetaFile(log.NewNopLogger(), dir2, meta))
+			testutil.Ok(t, metadata.Write(log.NewNopLogger(), dir2, meta))
 
 			testutil.Ok(t, block.Upload(ctx, log.NewNopLogger(), bkt, dir1))
 			testutil.Ok(t, block.Upload(ctx, log.NewNopLogger(), bkt, dir2))
